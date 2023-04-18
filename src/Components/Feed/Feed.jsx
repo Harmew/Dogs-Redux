@@ -1,16 +1,27 @@
 import React from "react";
 
 // Components
-import FeedModal from "./FeedModal";
 import FeedPhotos from "./FeedPhotos";
+import FeedModal from "./FeedModal";
+import Loading from "../Helper/Loading";
+import Error from "../Helper/Error";
 
 // PropTypes
 import PropTypes from "prop-types";
 
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import { loadNewPhotos, resertFeedState } from "../../Store/feed";
+
 const Feed = ({ user }) => {
-  const [modalPhoto, setModalPhoto] = React.useState(null);
-  const [pages, setPages] = React.useState([1]);
-  const [infinite, setInfinite] = React.useState(true);
+  const { infinite, loading, list, error } = useSelector((state) => state.feed);
+
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    dispatch(resertFeedState());
+    dispatch(loadNewPhotos({ user, total: 6 }));
+  }, [dispatch, user]);
 
   React.useEffect(() => {
     let wait = false;
@@ -19,7 +30,7 @@ const Feed = ({ user }) => {
         const scroll = window.scrollY;
         const height = document.body.offsetHeight - window.innerHeight;
         if (scroll > height * 0.75 && !wait) {
-          setPages((pages) => [...pages, pages.length + 1]);
+          dispatch(loadNewPhotos({ user, total: 6 }));
           wait = true;
           setTimeout(() => {
             wait = false;
@@ -35,22 +46,14 @@ const Feed = ({ user }) => {
       window.removeEventListener("wheel", infiniteScroll);
       window.removeEventListener("scroll", infiniteScroll);
     };
-  }, [infinite]);
+  }, [infinite, dispatch, user]);
 
   return (
     <div>
-      {modalPhoto && (
-        <FeedModal photo={modalPhoto} setModalPhoto={setModalPhoto} />
-      )}
-      {pages.map((page) => (
-        <FeedPhotos
-          key={page}
-          user={user}
-          page={page}
-          setModalPhoto={setModalPhoto}
-          setInfinite={setInfinite}
-        />
-      ))}
+      <FeedModal />
+      {list.length > 0 && <FeedPhotos />}
+      {loading && <Loading />}
+      {error && <Error error={error} />}
     </div>
   );
 };

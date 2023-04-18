@@ -9,11 +9,11 @@ import UserPhotoPost from "./UserPhotoPost";
 import UserStats from "./UserStats";
 import NotFound from "../NotFound";
 
-// Context
-import { UserContext } from "../../UserContext";
+// Redux
+import { useSelector } from "react-redux";
 
 const User = () => {
-  const { data } = React.useContext(UserContext);
+  const { data } = useSelector((state) => state.user);
 
   return (
     <section className="container">

@@ -13,15 +13,16 @@ import useFetch from "../../Hooks/useFetch";
 // API
 import { USER_POST } from "../../Api";
 
-// Context
-import { UserContext } from "../../UserContext";
+// Redux
+import { useDispatch } from "react-redux";
+import { userLogin } from "../../Store/user";
 
 const LoginCreate = () => {
   const username = useForm("username");
   const email = useForm("email");
   const password = useForm("password");
 
-  const { userLogin } = React.useContext(UserContext);
+  const dispatch = useDispatch();
   const { loading, error, request } = useFetch();
 
   async function handleSubmit(event) {
@@ -34,7 +35,10 @@ const LoginCreate = () => {
         password: password.value,
       });
       const { response } = await request(url, options);
-      if (response.ok) userLogin(username.value, password.value);
+      if (response.ok)
+        dispatch(
+          userLogin({ username: username.value, password: password.value })
+        );
     }
   }
 

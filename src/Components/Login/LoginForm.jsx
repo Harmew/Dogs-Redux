@@ -14,19 +14,25 @@ import Error from "../Helper/Error";
 // Hooks
 import useForm from "../../Hooks/useForm";
 
-// Context
-import { UserContext } from "../../UserContext";
+// Redux
+import { useDispatch, useSelector } from "react-redux";
+import { userLogin } from "../../Store/user";
 
 const LoginForm = () => {
   const username = useForm("username");
   const password = useForm();
 
-  const { userLogin, error, loading } = React.useContext(UserContext);
+  const { token, user } = useSelector((state) => state);
+  const dispatch = useDispatch();
+  const loading = token.loading || user.loading;
+  const error = token.error || user.error;
 
   async function handleSubmit(event) {
     event.preventDefault();
     if (username.validate() && password.validate()) {
-      userLogin(username.value, password.value);
+      dispatch(
+        userLogin({ username: username.value, password: password.value })
+      );
     }
   }
 

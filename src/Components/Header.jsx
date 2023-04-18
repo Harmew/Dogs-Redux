@@ -7,11 +7,11 @@ import styles from "./Header.module.css";
 // SVG
 import { ReactComponent as Dogs } from "../Assets/dogs.svg";
 
-// Context
-import { UserContext } from "../UserContext";
+// Redux
+import { useSelector } from "react-redux";
 
 const Header = () => {
-  const { data } = React.useContext(UserContext);
+  const { data } = useSelector((state) => state.user);
 
   return (
     <header className={styles.header}>
